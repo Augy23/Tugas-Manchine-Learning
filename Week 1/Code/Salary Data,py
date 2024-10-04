@@ -1,0 +1,92 @@
+# Import library yang dibutuhkan
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
+
+# Membaca file CSV
+file_path = '/mnt/data/Salary_Data.csv'  # Ubah path sesuai dengan lokasi file Anda
+data = pd.read_csv(file_path)
+
+# Menampilkan beberapa baris pertama data untuk melihat strukturnya
+print(data.head())
+
+# SIMPLE LINEAR REGRESSION
+# Memisahkan variabel independen (X) dan dependen (y)
+X = data[['YearsExperience']]
+y = data['Salary']
+
+# Membagi data menjadi data latih (80%) dan uji (20%)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Membuat model Simple Linear Regression
+simple_lr_model = LinearRegression()
+
+# Melatih model dengan data latih
+simple_lr_model.fit(X_train, y_train)
+
+# Memprediksi hasil menggunakan data uji
+y_pred_simple = simple_lr_model.predict(X_test)
+
+# Menampilkan koefisien dan intercept
+coef_simple = simple_lr_model.coef_
+intercept_simple = simple_lr_model.intercept_
+print("Simple Linear Regression Coef:", coef_simple)
+print("Simple Linear Regression Intercept:", intercept_simple)
+
+# MULTIPLE LINEAR REGRESSION
+# Menambahkan fitur sintetis seperti YearsExperience^2 dan log(YearsExperience)
+data['YearsExperience^2'] = data['YearsExperience'] ** 2
+data['log_YearsExperience'] = np.log(data['YearsExperience'])
+
+# Memisahkan variabel independen (X) dan dependen (y)
+X_multi = data[['YearsExperience', 'YearsExperience^2', 'log_YearsExperience']]
+
+# Membagi data menjadi data latih dan uji (80% latih, 20% uji)
+X_train_multi, X_test_multi, y_train_multi, y_test_multi = train_test_split(X_multi, y, test_size=0.2, random_state=42)
+
+# Membuat model Multiple Linear Regression
+multi_lr_model = LinearRegression()
+
+# Melatih model dengan data latih
+multi_lr_model.fit(X_train_multi, y_train_multi)
+
+# Memprediksi hasil menggunakan data uji
+y_pred_multi = multi_lr_model.predict(X_test_multi)
+
+# Menampilkan koefisien dan intercept
+coef_multi = multi_lr_model.coef_
+intercept_multi = multi_lr_model.intercept_
+print("Multiple Linear Regression Coef:", coef_multi)
+print("Multiple Linear Regression Intercept:", intercept_multi)
+
+# POLYNOMIAL REGRESSION
+# Membuat transformasi PolynomialFeatures untuk derajat ke-2
+poly = PolynomialFeatures(degree=2)
+
+# Mengubah data menjadi bentuk polinomial
+X_poly = poly.fit_transform(X)
+
+# Membagi data menjadi data latih dan uji (80% latih, 20% uji)
+X_train_poly, X_test_poly, y_train_poly, y_test_poly = train_test_split(X_poly, y, test_size=0.2, random_state=42)
+
+# Membuat model Polynomial Regression
+poly_model = LinearRegression()
+
+# Melatih model dengan data latih
+poly_model.fit(X_train_poly, y_train_poly)
+
+# Memprediksi hasil menggunakan data uji
+y_pred_poly = poly_model.predict(X_test_poly)
+
+# Menampilkan koefisien dan intercept
+coef_poly = poly_model.coef_
+intercept_poly = poly_model.intercept_
+print("Polynomial Regression Coef:", coef_poly)
+print("Polynomial Regression Intercept:", intercept_poly)
+
+# Menampilkan 5 prediksi pertama dari masing-masing model
+print("Prediksi Simple Linear Regression:", y_pred_simple[:5])
+print("Prediksi Multiple Linear Regression:", y_pred_multi[:5])
+print("Prediksi Polynomial Regression:", y_pred_poly[:5])
